@@ -1,71 +1,38 @@
 # OpenClaw Secure
 
-Hardened OpenClaw Docker image with security patches for known CVEs.
+Hardened OpenClaw Docker image for OpenClaw Business. Used as the base for agent containers.
 
-## Security Fixes
+## Security Fixes (in OpenClaw fork)
 
-### CVE-2026-25253 (CVSS 9.1)
-**Token Exfiltration via gatewayUrl Auto-Connect**
+All security fixes are now implemented natively in the **OpenClaw fork** (clone separately, pass `OPENCLAW_FORK_URL` at build). See `security-patches/README.md` for details.
 
-Fix: Gateway URL allowlisting. Only trusted gateway URLs are allowed.
+| CVE / Fix | Implementation |
+|-----------|----------------|
+| **CVE-2026-25253** (CVSS 9.1) | Gateway URL allowlisting |
+| **CVE-2026-24763** (CVSS 8.8) | PATH sanitization (`ENV PATH=...`) |
+| **CVE-2026-25157** (CVSS 8.1) | SSH mode disabled |
+| **device-local** | 172.16–31 as local when `OPENCLAW_GATEWAY_BIND=lan` |
+| **pairing-silent** | Auto-approve for not-paired / scope-upgrade |
+| **lan-ws** | ws:// to RFC1918 allowed |
 
-### CVE-2026-24763 (CVSS 8.8)
-**Docker Sandbox Command Injection via PATH**
+## Bundled Plugins
 
-Fix: PATH sanitization. Only standard system paths are allowed.
+| Plugin | Path | Description |
+|--------|------|-------------|
+| **superchat** | `/opt/superchat` | Superchat API (WhatsApp, Email, etc.) |
+| **knowledge** | `/opt/knowledge` | RAG search via platform backend |
+| **mcp-connect** | `/opt/mcp-connect` | Smithery Connect tools (Intercom, Slack, etc.) |
 
-### CVE-2026-25157 (CVSS 8.1)
-**SSH Mode Command Injection**
-
-Fix: SSH mode completely disabled for managed deployments.
-
-### Docker Build-Time Patches
-
-**patch-docker-device-local.js**
-
-Docker-Bridge-IPs (172.16–172.31) werden als „local“ für Device-Pairing erkannt. Das Browser-Tool verbindet aus dem Container (z.B. 172.18.0.2) – ohne diesen Patch wäre manuelle Pairing-Genehmigung nötig.
-
-**patch-docker-pairing-silent.js**
-
-Erstes Device-Pairing („not-paired“) für Browser-Tool wird silent auto-approved. Keine User-Interaktion nötig – Browser-Tool funktioniert direkt nach Start.
-
-*Beide Patches werden im Docker-Build nach `npm install openclaw` angewendet.*
-
-## Additional Hardening
-
-- Non-root user execution
-- Read-only filesystem
-- Capability dropping (--cap-drop=ALL)
-- Resource limits (2GB RAM, 1 CPU)
-- Process limits (100 max)
-- Network isolation
-- Tmpfs for /tmp (noexec, nosuid)
+Plugins require `PLATFORM_BACKEND_URL` and `PLATFORM_AGENT_ID` (or legacy `HAVOC_BACKEND_URL` / `HAVOC_AGENT_ID`).
 
 ## Build
 
 ```bash
 chmod +x build.sh
-./build.sh
+OPENCLAW_FORK_URL=https://github.com/YOUR_ORG/openclaw-saas-fork.git ./build.sh
 ```
 
-### Docker Browser / Pairing
-
-Browser-Tool und in-Container-Clients benötigen Pairing. Im Docker-Netzwerk werden 172.x.x.x nicht als „local“ gewertet. Die Deployment-Config setzt bereits `gateway.localNetworks` (PR [#18441](https://github.com/openclaw/openclaw/pull/18441)). Sobald der PR gemerged ist, funktioniert Auto-Pairing ohne Patches.
-
-**Frühtest mit PR-Branch:**
-```bash
-docker build -f openclaw-secure/Dockerfile \
-  --build-arg OPENCLAW_VERSION=github:openclaw/openclaw#feat/docker-local-pairing \
-  -t openclaw-secure:pr18441 .
-```
-
-**Patch-Verifizierung (nach Build):**
-```bash
-docker run --rm --entrypoint sh openclaw-secure:latest -c 'grep -l OPENCLAW_GATEWAY_BIND /usr/local/lib/node_modules/openclaw/dist/*.js'
-# Sollte mindestens eine Datei ausgeben (ws-CPpn8hzq.js oder chrome-*)
-```
-
-**Bei "pairing required" (Browser-Tool):** Container muss `OPENCLAW_GATEWAY_BIND=lan` gesetzt haben. Agenix setzt das automatisch. Alternativ: `openclaw devices approve` manuell im Container ausführen.
+`OPENCLAW_FORK_URL` is required — the fork must include SaaS/Docker changes (device-local, pairing-silent, etc.).
 
 ## Usage
 
@@ -73,19 +40,21 @@ docker run --rm --entrypoint sh openclaw-secure:latest -c 'grep -l OPENCLAW_GATE
 docker run -d \
   --name openclaw-agent \
   -p 18789:18789 \
-  -v /path/to/workspace:/root/.openclaw \
+  -v /path/to/workspace:/home/node/.openclaw \
   -e ANTHROPIC_API_KEY=sk-ant-... \
+  -e PLATFORM_BACKEND_URL=http://host.docker.internal:8080 \
+  -e PLATFORM_AGENT_ID=your-agent-id \
   openclaw-secure:latest
 ```
 
-## Verification
+## Additional Hardening
 
-Check that security patches are applied:
-
-```bash
-docker exec openclaw-agent node -e "console.log(process.env.PATH)"
-# Should only show: /usr/local/bin:/usr/bin:/bin
-```
+- Non-root user execution
+- Read-only filesystem
+- Capability dropping (--cap-drop=ALL)
+- Resource limits (2GB RAM, 1 CPU)
+- Network isolation
+- Tmpfs for /tmp (noexec, nosuid)
 
 ## License
 

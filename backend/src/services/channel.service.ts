@@ -437,7 +437,7 @@ export class ChannelService {
             break;
           case 'superchat':
             // Superchat is NOT an OpenClaw channel — handled by Havoc bridge.
-            // But we need to enable the havoc-superchat plugin + superchat tool.
+            // But we need to enable the superchat plugin + superchat tool.
             break;
           // webchat is NOT an OpenClaw channel — skip it
         }
@@ -458,10 +458,10 @@ export class ChannelService {
       if ((channelsConfig as any).matrix) pluginEntries.matrix = { enabled: true };
       if ((channelsConfig as any).feishu) pluginEntries.feishu = { enabled: true };
 
-      // Superchat: enable havoc-superchat plugin + load path + tool
+      // Superchat: enable superchat plugin + load path + tool
       const hasSuperchat = channels.some(ch => ch.type === 'superchat');
       if (hasSuperchat) {
-        pluginEntries['havoc-superchat'] = { enabled: true };
+        pluginEntries['superchat'] = { enabled: true };
       }
 
       // Build web provider config when WhatsApp is present (Baileys / WhatsApp Web)
@@ -494,7 +494,7 @@ export class ChannelService {
 
       // Hot-reload: update channels, plugins, and web provider sections
       const superchatConfig = hasSuperchat ? {
-        plugins: { load: { paths: ['/opt/havoc-superchat'] }, entries: pluginsToSend },
+        plugins: { load: { paths: ['/opt/superchat'] }, entries: pluginsToSend },
         tools: { alsoAllow: ['superchat'] },
       } : { plugins: { entries: pluginsToSend } };
 

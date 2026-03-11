@@ -4,8 +4,8 @@
  */
 export default function (api) {
   const getEnv = () => {
-    const backendUrl = process.env.HAVOC_BACKEND_URL;
-    const agentId = process.env.HAVOC_AGENT_ID;
+    const backendUrl = process.env.PLATFORM_BACKEND_URL || process.env.HAVOC_BACKEND_URL;
+    const agentId = process.env.PLATFORM_AGENT_ID || process.env.HAVOC_AGENT_ID;
     const token = process.env.OPENCLAW_GATEWAY_TOKEN;
     if (!backendUrl || !agentId || !token) return null;
     return { backendUrl: backendUrl.replace(/\/$/, ''), agentId, token };
@@ -71,7 +71,7 @@ export default function (api) {
   // ── mcp_call: Execute an MCP tool ───────────────────────────────────────
   api.registerTool({
     name: 'mcp_call',
-    description: 'Call an MCP tool from a connected integration. Use mcp_list first to get connectionId and tool names. Pass connectionId (from mcp_list), tool name, and args. Example: mcp_call({ connectionId: "havoc-xxx", tool: "reply_to_conversation", args: { conversationId: "123", message: "Hello" } })',
+    description: 'Call an MCP tool from a connected integration. Use mcp_list first to get connectionId and tool names. Pass connectionId (from mcp_list), tool name, and args. Example: mcp_call({ connectionId: "platform-xxx", tool: "reply_to_conversation", args: { conversationId: "123", message: "Hello" } })',
     parameters: {
       type: 'object',
       properties: {

@@ -1,4 +1,4 @@
-// Internal MCP Proxy — called by havoc-mcp plugin from agent containers
+// Internal MCP Proxy — called by mcp-connect plugin from agent containers
 // Auth: X-Gateway-Token must match agent's gatewayToken
 // Proxies MCP tool list + tool calls via Smithery Connect
 

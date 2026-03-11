@@ -74,6 +74,8 @@ cd openclaw-secure && ./build.sh
 
 Or add `OPENCLAW_FORK_URL` to `backend/.env` before running `deploy/update-all.sh`.
 
+Agent containers need `PLATFORM_BACKEND_URL` (backend URL reachable from Docker) — set in `.env` as `PLATFORM_BACKEND_URL` or legacy `HAVOC_BACKEND_URL`.
+
 ## Project Structure
 
 ```

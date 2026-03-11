@@ -401,12 +401,12 @@ export class DeploymentService {
       // loads the plugin but marks it as disabled, preventing channel login.
       plugins: {
         load: { paths: [
-          '/opt/havoc-knowledge',
-          '/opt/havoc-mcp',
-          ...((deployConfig.channels || []).some(c => c.type === 'superchat') ? ['/opt/havoc-superchat'] : []),
+          '/opt/knowledge',
+          '/opt/mcp-connect',
+          ...((deployConfig.channels || []).some(c => c.type === 'superchat') ? ['/opt/superchat'] : []),
         ] },
         entries: {
-          'havoc-knowledge': { enabled: true },
+          'knowledge': { enabled: true },
           ...(channels.whatsapp ? { whatsapp: { enabled: true } } : {}),
           ...(channels.telegram ? { telegram: { enabled: true } } : {}),
           ...(channels.discord ? { discord: { enabled: true } } : {}),
@@ -444,10 +444,10 @@ export class DeploymentService {
           } : {}),
           // Lobster workflow engine
           ...(deployConfig.lobsterEnabled ? { lobster: { enabled: true } } : {}),
-          // Havoc Superchat proactive send (when Superchat channel connected)
-          ...((deployConfig.channels || []).some(c => c.type === 'superchat') ? { 'havoc-superchat': { enabled: true } } : {}),
-          // Havoc MCP — Smithery Connect tools (Intercom, Slack, GitHub, Notion, etc.)
-          'havoc-mcp': { enabled: true },
+          // Superchat proactive send (when Superchat channel connected)
+          ...((deployConfig.channels || []).some(c => c.type === 'superchat') ? { 'superchat': { enabled: true } } : {}),
+          // MCP Connect — Smithery tools (Intercom, Slack, GitHub, Notion, etc.)
+          'mcp-connect': { enabled: true },
 
         },
       },
@@ -1263,8 +1263,11 @@ export class DeploymentService {
         // API keys are in auth-profiles.json + openclaw.json, NOT env vars.
         const env: Record<string, string> = {
           OPENCLAW_GATEWAY_TOKEN: gatewayToken,
+          PLATFORM_AGENT_ID: deployConfig.agentId,
+          PLATFORM_BACKEND_URL: config.platformBackendUrl,
+          // Legacy (plugins support both)
           HAVOC_AGENT_ID: deployConfig.agentId,
-          HAVOC_BACKEND_URL: config.havocBackendUrl,
+          HAVOC_BACKEND_URL: config.platformBackendUrl,
         };
 
         // Create container using Docker SDK.
@@ -1436,8 +1439,10 @@ export class DeploymentService {
 
     const env: Record<string, string> = {
       OPENCLAW_GATEWAY_TOKEN: gatewayToken,
+      PLATFORM_AGENT_ID: agentId,
+      PLATFORM_BACKEND_URL: config.platformBackendUrl,
       HAVOC_AGENT_ID: agentId,
-      HAVOC_BACKEND_URL: config.havocBackendUrl,
+      HAVOC_BACKEND_URL: config.platformBackendUrl,
     };
 
     const newContainerId = await dockerService.createContainer({

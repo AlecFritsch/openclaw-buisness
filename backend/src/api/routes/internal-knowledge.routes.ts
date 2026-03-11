@@ -1,4 +1,4 @@
-// Internal Knowledge API — called by agent containers (havoc-knowledge plugin)
+// Internal Knowledge API — called by agent containers (knowledge plugin)
 // Auth: X-Gateway-Token must match an agent's gatewayToken
 
 import type { FastifyInstance } from 'fastify';

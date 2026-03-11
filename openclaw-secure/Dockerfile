@@ -88,14 +88,10 @@ RUN mkdir -p /home/node/.openclaw/workspace \
 COPY openclaw-secure/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Havoc Superchat plugin
-COPY openclaw-secure/plugins/havoc-superchat /opt/havoc-superchat
-
-# Havoc Knowledge plugin (org-scoped RAG search)
-COPY openclaw-secure/plugins/havoc-knowledge /opt/havoc-knowledge
-
-# Havoc MCP plugin (Smithery Connect — Intercom, Slack, GitHub, Notion, etc.)
-COPY openclaw-secure/plugins/havoc-mcp /opt/havoc-mcp
+# Platform plugins (Superchat, Knowledge, MCP Connect)
+COPY openclaw-secure/plugins/superchat /opt/superchat
+COPY openclaw-secure/plugins/knowledge /opt/knowledge
+COPY openclaw-secure/plugins/mcp-connect /opt/mcp-connect
 
 USER node
 WORKDIR /home/node

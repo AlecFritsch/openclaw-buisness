@@ -61,9 +61,9 @@ export const config = {
   // Optional HMAC secret to verify Superchat webhook signatures (x-superchat-signature)
   superchatWebhookSecret: process.env.SUPERCHAT_WEBHOOK_SECRET || '',
 
-  // Backend URL for agent containers (superchat_send plugin callbacks)
+  // Backend URL for agent containers (Superchat, Knowledge, MCP plugins)
   // Default: host.docker.internal (Docker Desktop) or 172.17.0.1 (Linux bridge)
-  havocBackendUrl: process.env.HAVOC_BACKEND_URL || 'http://host.docker.internal:8080',
+  platformBackendUrl: process.env.PLATFORM_BACKEND_URL || process.env.HAVOC_BACKEND_URL || 'http://host.docker.internal:8080',
 
   // Stripe
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',

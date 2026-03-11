@@ -1,5 +1,5 @@
 /**
- * Havoc Knowledge Plugin — automatic RAG context injection + manual search tool.
+ * OpenClaw Business Knowledge Plugin — automatic RAG context injection + manual search tool.
  *
  * 1. before_prompt_build hook: auto-searches knowledge base with the last user
  *    message and injects matching context via prependContext.
@@ -7,7 +7,7 @@
  */
 export default function (api) {
   const getEnv = () => {
-    const backendUrl = process.env.HAVOC_BACKEND_URL;
+    const backendUrl = process.env.PLATFORM_BACKEND_URL || process.env.HAVOC_BACKEND_URL;
     const token = process.env.OPENCLAW_GATEWAY_TOKEN;
     if (!backendUrl || !token) return null;
     return { backendUrl: backendUrl.replace(/\/$/, ''), token };
@@ -54,7 +54,7 @@ export default function (api) {
       ctx.prependContext = (ctx.prependContext || '') +
         `\n<knowledge_base>\nThe following information was retrieved from the organization's knowledge base. Use it to answer the user's question when relevant.\n\n${context}\n</knowledge_base>\n`;
     },
-    { name: 'havoc-knowledge.auto-inject', description: 'Auto-inject RAG knowledge context before prompt build' },
+    { name: 'knowledge.auto-inject', description: 'Auto-inject RAG knowledge context before prompt build' },
   );
 
   // ── Manual search tool (for explicit/refined queries) ──────────────────
@@ -72,7 +72,7 @@ export default function (api) {
     },
     async execute(_toolCallId, params) {
       const env = getEnv();
-      if (!env) return { content: [{ type: 'text', text: 'Knowledge search unavailable: HAVOC_BACKEND_URL not set.' }] };
+      if (!env) return { content: [{ type: 'text', text: 'Knowledge search unavailable: PLATFORM_BACKEND_URL not set.' }] };
 
       try {
         const results = await searchBackend(params.query, params.limit || 5);

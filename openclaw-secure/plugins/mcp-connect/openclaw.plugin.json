@@ -1,6 +1,6 @@
 {
-  "id": "havoc-mcp",
-  "name": "Havoc MCP (Smithery Connect)",
+  "id": "mcp-connect",
+  "name": "OpenClaw Business MCP (Smithery Connect)",
   "description": "Injects MCP tools from Smithery Connect (Intercom, Slack, GitHub, Notion, etc.) into the agent",
   "configSchema": {
     "type": "object",

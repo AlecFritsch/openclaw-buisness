@@ -1,13 +1,13 @@
 /**
- * Havoc Superchat Plugin — unified superchat tool for full Superchat API control.
+ * OpenClaw Business Superchat Plugin — unified superchat tool for full Superchat API control.
  * One tool, many actions: send, read conversations, manage contacts, templates, etc.
  */
 export default function (api) {
   const ENTERPRISE_HINT = '⚡ Dieses Feature erfordert Superchat Enterprise. Upgrade im Superchat-Dashboard unter Einstellungen → Abo, oder kontaktiere deinen Superchat Account Manager. Nach dem Upgrade funktioniert es sofort — keine Änderung an der Integration nötig.';
 
   const getEnv = () => {
-    const backendUrl = process.env.HAVOC_BACKEND_URL;
-    const agentId = process.env.HAVOC_AGENT_ID;
+    const backendUrl = process.env.PLATFORM_BACKEND_URL || process.env.HAVOC_BACKEND_URL;
+    const agentId = process.env.PLATFORM_AGENT_ID || process.env.HAVOC_AGENT_ID;
     const token = process.env.OPENCLAW_GATEWAY_TOKEN;
     if (!backendUrl || !agentId || !token) return null;
     return { backendUrl: backendUrl.replace(/\/$/, ''), agentId, token };

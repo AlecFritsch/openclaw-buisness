@@ -84,12 +84,12 @@ frontend/.env.local
 
 ## 4. Content to remove
 
-### Plugins (Havoc-specific, optionally keep):
-- `openclaw-secure/plugins/havoc-superchat` – Superchat integration
-- `openclaw-secure/plugins/havoc-knowledge` – RAG
-- `openclaw-secure/plugins/havoc-mcp` – Smithery MCP via backend
+### Plugins (renamed to generic names, done):
+- `openclaw-secure/plugins/superchat` – Superchat integration
+- `openclaw-secure/plugins/knowledge` – RAG
+- `openclaw-secure/plugins/mcp-connect` – Smithery MCP via backend
 
-**Recommendation:** Either rename generically (e.g. `superchat`, `knowledge-base`, `mcp-connect`) with backend URL placeholders, or keep as example plugins with clear docs.
+Env vars: `PLATFORM_BACKEND_URL`, `PLATFORM_AGENT_ID` (legacy `HAVOC_*` still supported).
 
 ### Internal/private config:
 - `.kiro/` – remove or add to .gitignore
