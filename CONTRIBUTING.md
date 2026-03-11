@@ -7,6 +7,8 @@ This project is no longer actively maintained by its original author. Maintainer
 ```bash
 pnpm install
 cp .env.example .env   # Add your keys (MongoDB, Clerk, etc.)
+# Next.js needs frontend env vars — copy or symlink:
+cp .env frontend/.env.local   # or: ln -s ../.env frontend/.env.local
 pnpm build
 pnpm dev
 ```

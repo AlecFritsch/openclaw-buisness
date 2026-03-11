@@ -13,8 +13,15 @@ export function PlanGate({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
   const [isUnpaid, setIsUnpaid] = useState(false);
 
+  const disablePlanGate = process.env.NEXT_PUBLIC_DISABLE_PLAN_GATE === 'true';
+
   useEffect(() => {
     if (!isSignedIn || !orgId) {
+      setChecking(false);
+      return;
+    }
+
+    if (disablePlanGate) {
       setChecking(false);
       return;
     }
@@ -47,13 +54,14 @@ export function PlanGate({ children }: { children: React.ReactNode }) {
   }, [pathname, orgId, isSignedIn, getToken]);
 
   useEffect(() => {
+    if (disablePlanGate) return;
     if (!checking && isUnpaid) {
       const allowed = ALLOWED_WHEN_UNPAID.some((p) => pathname?.startsWith(p));
       if (!allowed) {
         window.location.href = "/waiting";
       }
     }
-  }, [checking, isUnpaid, pathname]);
+  }, [checking, isUnpaid, pathname, disablePlanGate]);
 
   return <>{children}</>;
 }

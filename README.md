@@ -63,7 +63,18 @@ pnpm dev
 
 See [.env.example](.env.example) for required variables (MongoDB, Clerk, etc.).
 
-**Self-hosting:** Replace `your-domain.com`, `support@your-domain.com`, and similar placeholders with your own domain and contact email.
+**Self-hosting:** Replace `your-domain.com`, `support@your-domain.com`, and similar placeholders with your own domain and contact email. Set `DISABLE_PLAN_GATE=true` and `NEXT_PUBLIC_DISABLE_PLAN_GATE=true` to run without Stripe.
+
+## Setup Checklist (avoid common blockers)
+
+| Step | Action |
+|------|--------|
+| **Env files** | Copy `.env.example` → `.env` (root). Next.js loads from `frontend/` — also copy to `frontend/.env.local` or symlink so `NEXT_PUBLIC_*` vars are visible. |
+| **Clerk** | Set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from [Clerk Dashboard](https://dashboard.clerk.com). Configure webhook → `https://your-api/api/webhooks/clerk`. |
+| **Linux + Docker** | Set `PLATFORM_BACKEND_URL=http://172.17.0.1:8080` (not `host.docker.internal`). |
+| **First deploy** | Add an AI provider in Settings → AI Providers before deploying your first agent. |
+| **Knowledge/RAG** | Create a MongoDB Atlas Vector Search index on `knowledge_chunks` — see [docs/KNOWLEDGE-SETUP.md](docs/KNOWLEDGE-SETUP.md). |
+| **OpenClaw fork** | Clone, publish your fork with SaaS changes, set `OPENCLAW_FORK_URL` before `./build.sh`. |
 
 ## Building the Agent Docker Image
 
@@ -74,7 +85,7 @@ export OPENCLAW_FORK_URL=https://github.com/YOUR_ORG/openclaw-saas-fork.git
 cd openclaw-secure && ./build.sh
 ```
 
-Or add `OPENCLAW_FORK_URL` to `backend/.env` before running `deploy/update-all.sh`.
+Or add `OPENCLAW_FORK_URL` to `.env` (root) before running `deploy/update-all.sh`.
 
 Agent containers need `PLATFORM_BACKEND_URL` (backend URL reachable from Docker) — set in `.env` as `PLATFORM_BACKEND_URL` or legacy `HAVOC_BACKEND_URL`.
 

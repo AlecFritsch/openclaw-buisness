@@ -96,6 +96,9 @@ export const config = {
 
   // Admin
   adminApiKey: process.env.ADMIN_API_KEY || '',
+
+  // Self-hosting: bypass payment/trial gates (no Stripe required)
+  disablePlanGate: process.env.DISABLE_PLAN_GATE === 'true',
 } as const;
 
 // Validate required env vars (throws instead of process.exit so tests can catch)

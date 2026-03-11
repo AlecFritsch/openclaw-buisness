@@ -165,12 +165,12 @@ export async function authMiddleware(
     request.authMethod = 'clerk_jwt';
     try {
       const resolved = await resolvePlan(request.userId, request.organizationId);
-      request.plan = resolved.plan;
-      request.trialExpired = resolved.trialExpired;
+      request.plan = config.disablePlanGate ? 'professional' : resolved.plan;
+      request.trialExpired = config.disablePlanGate ? false : resolved.trialExpired;
     } catch (err) {
       request.log.warn({ err }, 'Failed to resolve plan, defaulting to unpaid');
-      request.plan = 'unpaid';
-      request.trialExpired = true;
+      request.plan = config.disablePlanGate ? 'professional' : 'unpaid';
+      request.trialExpired = config.disablePlanGate ? false : true;
     }
 
     // ── SSO Enforcement ─────────────────────────────────────────
@@ -248,12 +248,12 @@ async function authenticateApiKey(
   // Resolve plan + trial status (same as Clerk JWT path)
   try {
     const resolved = await resolvePlan(request.userId, request.organizationId);
-    request.plan = resolved.plan;
-    request.trialExpired = resolved.trialExpired;
+    request.plan = config.disablePlanGate ? 'professional' : resolved.plan;
+    request.trialExpired = config.disablePlanGate ? false : resolved.trialExpired;
   } catch (err) {
     request.log.warn({ err }, 'Failed to resolve plan for API key auth, defaulting to unpaid');
-    request.plan = 'unpaid';
-    request.trialExpired = true;
+    request.plan = config.disablePlanGate ? 'professional' : 'unpaid';
+    request.trialExpired = config.disablePlanGate ? false : true;
   }
 
   // Update lastUsed timestamp (fire-and-forget, don't block the request)
